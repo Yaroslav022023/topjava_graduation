@@ -2,8 +2,6 @@ package com.graduation.topjava.service;
 
 import com.graduation.topjava.model.User;
 import com.graduation.topjava.repository.CrudUserRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -22,7 +20,6 @@ public class UserService {
         this.crudUserRepository = crudUserRepository;
     }
 
-    @CacheEvict(value = "users", allEntries = true)
     public User save(User user) {
         Assert.notNull(user, "user must not be null");
         return crudUserRepository.save(user);
@@ -32,7 +29,6 @@ public class UserService {
         return checkNotFoundWithId(crudUserRepository.findById(id).orElse(null), id);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
     public void delete(int id) {
         checkNotFoundWithId(crudUserRepository.delete(id), id);
     }
@@ -42,7 +38,6 @@ public class UserService {
         return checkNotFound(crudUserRepository.findByEmail(email), "email=" + email);
     }
 
-    @Cacheable("users")
     public List<User> getAll() {
         return crudUserRepository.findAll(SORT_NAME_EMAIL);
     }

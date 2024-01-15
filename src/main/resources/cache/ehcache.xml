@@ -7,16 +7,9 @@
 
     <cache-template name="expiryCache">
         <expiry>
-            <ttl unit="minutes">5</ttl>
+            <ttl unit="minutes">15</ttl>
         </expiry>
         <heap unit="entries">5000</heap>
-    </cache-template>
-
-    <cache-template name="usersNonExpiryCache">
-        <expiry>
-            <none/>
-        </expiry>
-        <heap>10000</heap>
     </cache-template>
 
     <cache-template name="restaurantsNonExpiryCache">
@@ -26,6 +19,5 @@
         <heap>50</heap>
     </cache-template>
 
-    <cache alias="users" uses-template="usersNonExpiryCache"/>
     <cache alias="restaurants" uses-template="restaurantsNonExpiryCache"/>
 </config>
