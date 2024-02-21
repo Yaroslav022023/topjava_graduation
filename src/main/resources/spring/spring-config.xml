@@ -13,6 +13,20 @@
     <context:component-scan base-package="com.graduation.topjava.service"/>
     <context:component-scan base-package="com.graduation.topjava.web"/>
 
+    <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
+
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+          p:driverClassName="org.hsqldb.jdbcDriver"
+          p:url="${database.url}"
+          p:username="${database.username}"
+          p:password="${database.password}"/>
+
+    <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
+        <jdbc:script location="${jdbc.initLocation}"/>
+        <jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>
+    </jdbc:initialize-database>
+
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           p:dataSource-ref="dataSource"
           p:packagesToScan="com.graduation.topjava.model">
@@ -23,7 +37,6 @@
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}"
                        value="${hibernate.use_sql_comments}"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).JPA_PROXY_COMPLIANCE}" value="false"/>
-                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_AUTO}" value="${hibernate.hbm2ddl.auto}"/>-->
             </map>
         </property>
         <property name="jpaVendorAdapter">
@@ -37,20 +50,4 @@
           p:entityManagerFactory-ref="entityManagerFactory"/>
 
     <tx:annotation-driven/>
-
-    <beans profile="hsqldb">
-        <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
-
-        <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
-            <jdbc:script location="${jdbc.initLocation}"/>
-            <jdbc:script encoding="utf-8" location="classpath:db/populateDB.sql"/>
-        </jdbc:initialize-database>
-
-        <bean id="dataSource"
-              class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-              p:driverClassName="org.hsqldb.jdbcDriver"
-              p:url="${database.url}"
-              p:username="${database.username}"
-              p:password="${database.password}"/>
-    </beans>
 </beans>

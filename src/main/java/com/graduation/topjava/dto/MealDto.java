@@ -1,5 +1,7 @@
 package com.graduation.topjava.dto;
 
+import java.util.Objects;
+
 public class MealDto {
     private Integer id;
     private String name;
@@ -33,6 +35,19 @@ public class MealDto {
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MealDto mealDto = (MealDto) o;
+        return price == mealDto.price && Objects.equals(id, mealDto.id) && Objects.equals(name, mealDto.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, price);
     }
 
     @Override
