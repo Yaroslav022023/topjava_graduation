@@ -22,7 +22,7 @@ public class UserService {
 
     public User save(User user) {
         Assert.notNull(user, "user must not be null");
-        return crudUserRepository.save(user);
+        return user.isNew() || get(user.id()) != null ? crudUserRepository.save(user) : null;
     }
 
     public User get(int id) {
@@ -30,7 +30,7 @@ public class UserService {
     }
 
     public void delete(int id) {
-        checkNotFoundWithId(crudUserRepository.delete(id), id);
+        checkNotFoundWithId(crudUserRepository.delete(id) != 0, id);
     }
 
     public User getByEmail(String email) {

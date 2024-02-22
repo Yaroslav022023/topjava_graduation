@@ -3,6 +3,9 @@ package com.graduation.topjava;
 import com.graduation.topjava.model.Role;
 import com.graduation.topjava.model.User;
 
+import java.util.Collections;
+import java.util.List;
+
 import static com.graduation.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
@@ -20,4 +23,17 @@ public class UserTestData {
     public static final User user_2 = new User(USER_2_ID, "User_2", "user_2@yandex.ru", "password_2", Role.USER);
     public static final User user_3 = new User(USER_3_ID, "User_3", "user_3@yandex.ru", "password_3", Role.USER);
     public static final User guest = new User(GUEST_ID, "Guest", "guest@gmail.com", "guest");
+
+    public static final List<User> users = List.of(admin, guest, user_1, user_2, user_3);
+
+    public static User getNew() {
+        return new User(null, "New_user", "new@gmail.com", "newPass", Role.USER);
+    }
+
+    public static User getUpdated() {
+        User updated = new User(USER_2_ID, "User_2_updated", "user_2_updated@yandex.ru", "password_2_updated", Role.USER);
+        updated.setEnabled(false);
+        updated.setRoles(Collections.singletonList(Role.ADMIN));
+        return updated;
+    }
 }
