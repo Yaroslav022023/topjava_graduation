@@ -1,10 +1,10 @@
 package com.graduation.topjava.service;
 
+import com.graduation.topjava.dto.RestaurantViewDto;
+import com.graduation.topjava.dto.RestaurantVotedByUserDto;
 import com.graduation.topjava.model.Restaurant;
 import com.graduation.topjava.repository.CrudRestaurantRepository;
 import com.graduation.topjava.repository.CrudVoiceRepository;
-import com.graduation.topjava.dto.RestaurantViewDto;
-import com.graduation.topjava.dto.RestaurantVotedByUserDto;
 import com.graduation.topjava.util.RestaurantUtil;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,7 +21,8 @@ public class RestaurantService {
     private final CrudRestaurantRepository crudRestaurantRepository;
     private final CrudVoiceRepository crudVoiceRepository;
 
-    public RestaurantService(CrudRestaurantRepository crudRestaurantRepository, CrudVoiceRepository crudVoiceRepository) {
+    public RestaurantService(CrudRestaurantRepository crudRestaurantRepository,
+                             CrudVoiceRepository crudVoiceRepository) {
         this.crudRestaurantRepository = crudRestaurantRepository;
         this.crudVoiceRepository = crudVoiceRepository;
     }
@@ -29,7 +30,7 @@ public class RestaurantService {
     @CacheEvict(value = "restaurants", allEntries = true)
     public Restaurant save(Restaurant restaurant) {
         Assert.notNull(restaurant, "restaurant must not be null");
-        return crudRestaurantRepository.save(restaurant);
+        return restaurant.isNew() || get(restaurant.id()) != null ? crudRestaurantRepository.save(restaurant) : null;
     }
 
     public Restaurant get(int id) {
@@ -38,7 +39,7 @@ public class RestaurantService {
 
     @CacheEvict(value = "restaurants", allEntries = true)
     public void delete(int id) {
-        checkNotFoundWithId(crudRestaurantRepository.delete(id), id);
+        checkNotFoundWithId(crudRestaurantRepository.delete(id) != 0, id);
     }
 
     public List<Restaurant> getAll() {
@@ -51,10 +52,8 @@ public class RestaurantService {
     }
 
     public RestaurantVotedByUserDto getVotedByUser(int userId) {
-        Restaurant restaurant = crudVoiceRepository.findByUserIdForToday(userId, LocalDate.now()).getRestaurant();
-        if (restaurant != null) {
-            return RestaurantUtil.convertToVotedByUserDto(restaurant);
-        }
-        return null;
+        Restaurant restaurant = checkNotFoundWithId(
+                crudVoiceRepository.findByUserIdForToday(userId, LocalDate.now()), userId).getRestaurant();
+        return restaurant != null ? RestaurantUtil.convertToVotedByUserDto(restaurant) : null;
     }
 }

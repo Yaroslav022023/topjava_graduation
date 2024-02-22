@@ -1,5 +1,6 @@
 package com.graduation.topjava.service;
 
+import com.graduation.topjava.MealTestData;
 import com.graduation.topjava.model.Meal;
 import com.graduation.topjava.util.exception.NotFoundException;
 import org.junit.jupiter.api.Assertions;
@@ -38,9 +39,9 @@ public class MealServiceTest extends AbstractServiceTest {
 
     @Test
     void create() {
-        Meal created = service.save(getNew(), FRENCH_ID);
+        Meal created = service.save(MealTestData.getNew(), FRENCH_ID);
         int newId = created.id();
-        Meal newMeal = getNew();
+        Meal newMeal = MealTestData.getNew();
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(service.get(newId, FRENCH_ID), newMeal);
@@ -48,14 +49,14 @@ public class MealServiceTest extends AbstractServiceTest {
 
     @Test
     void update() {
-        Meal updated = getUpdated();
+        Meal updated = MealTestData.getUpdated();
         service.save(updated, ITALIAN_ID);
-        MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), getUpdated());
+        MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), MealTestData.getUpdated());
     }
 
     @Test
     void updateNotOwn() {
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.save(getUpdated(), ASIAN_ID));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> service.save(MealTestData.getUpdated(), ASIAN_ID));
         Assertions.assertEquals("Not found entity with id=" + italian_meal1.id(), exception.getMessage());
         MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), italian_meal1);
     }

@@ -2,12 +2,12 @@ package com.graduation.topjava.dto;
 
 import java.util.Objects;
 
-public class MealDto {
+public class MealViewDto {
     private Integer id;
     private String name;
     private long price;
 
-    public MealDto(Integer id, String name, long price) {
+    public MealViewDto(Integer id, String name, long price) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -41,8 +41,8 @@ public class MealDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealDto mealDto = (MealDto) o;
-        return price == mealDto.price && Objects.equals(id, mealDto.id) && Objects.equals(name, mealDto.name);
+        MealViewDto mealViewDTO = (MealViewDto) o;
+        return price == mealViewDTO.price && Objects.equals(id, mealViewDTO.id) && Objects.equals(name, mealViewDTO.name);
     }
 
     @Override

@@ -45,10 +45,6 @@ public class User extends AbstractNamedEntity {
     public User() {
     }
 
-    public User(User u) {
-        this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);
-    }
-
     public User(Integer id, String name, String email, String password, Role... roles) {
         this(id, name, email, password, true, LocalDateTime.now(), List.of(roles));
     }
