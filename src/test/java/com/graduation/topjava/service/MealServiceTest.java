@@ -2,6 +2,7 @@ package com.graduation.topjava.service;
 
 import com.graduation.topjava.MealTestData;
 import com.graduation.topjava.model.Meal;
+import com.graduation.topjava.util.exception.ExistException;
 import com.graduation.topjava.util.exception.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -75,5 +76,10 @@ public class MealServiceTest extends AbstractServiceTest {
     @Test
     void deleteNotOwn() {
         assertThrows(NotFoundException.class, () -> service.delete(italian_meal1.id(), FRENCH_ID));
+    }
+
+    @Test
+    void addDuplicateMealIntoRestaurantForToday() {
+        assertThrows(ExistException.class, () -> service.save(asian_meal1, ASIAN_ID));
     }
 }
