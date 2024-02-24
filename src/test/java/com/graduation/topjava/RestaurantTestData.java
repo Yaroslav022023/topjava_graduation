@@ -2,6 +2,7 @@ package com.graduation.topjava;
 
 import com.graduation.topjava.dto.RestaurantViewDto;
 import com.graduation.topjava.dto.RestaurantVotedByUserDto;
+import com.graduation.topjava.dto.RestaurantWithNumberVoicesDto;
 import com.graduation.topjava.model.Restaurant;
 
 import java.util.HashSet;
@@ -15,6 +16,8 @@ public class RestaurantTestData {
             MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "meals");
     public static final MatcherFactory.Matcher<RestaurantViewDto> RESTAURANT_VIEW_DTO_MATCHER =
             MatcherFactory.usingEqualsComparator(RestaurantViewDto.class);
+    public static final MatcherFactory.Matcher<RestaurantWithNumberVoicesDto> RESTAURANT_WITH_NUMBER_VOICES_DTO_MATCHER =
+            MatcherFactory.usingEqualsComparator(RestaurantWithNumberVoicesDto.class);
     public static final MatcherFactory.Matcher<RestaurantVotedByUserDto> RESTAURANT_VOTED_BY_USER_DTO_MATCHER =
             MatcherFactory.usingIgnoringFieldsComparator(RestaurantVotedByUserDto.class, "meals");
 
@@ -33,6 +36,11 @@ public class RestaurantTestData {
         asian.setMeals(new HashSet<>(asian_meals));
         french.setMeals(new HashSet<>(french_meals));
     }
+
+    public static final RestaurantWithNumberVoicesDto italianWithNumberVoices = new RestaurantWithNumberVoicesDto(ITALIAN_ID, "Italian", 2);
+    public static final RestaurantWithNumberVoicesDto asianWithNumberVoices = new RestaurantWithNumberVoicesDto(ASIAN_ID, "Asian", 1);
+    public static final RestaurantWithNumberVoicesDto frenchWithNumberVoices = new RestaurantWithNumberVoicesDto(FRENCH_ID, "French", 0);
+    public static final List<RestaurantWithNumberVoicesDto> restaurantsWithNumberVoices = List.of(italianWithNumberVoices, asianWithNumberVoices, frenchWithNumberVoices);
 
     public static Restaurant getNew() {
         return new Restaurant(null, "Created Restaurant");

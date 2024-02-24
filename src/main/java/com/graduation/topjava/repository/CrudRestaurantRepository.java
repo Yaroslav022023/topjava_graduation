@@ -1,5 +1,6 @@
 package com.graduation.topjava.repository;
 
+import com.graduation.topjava.dto.RestaurantWithNumberVoicesDto;
 import com.graduation.topjava.model.Restaurant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,4 +20,11 @@ public interface CrudRestaurantRepository extends JpaRepository<Restaurant, Inte
 
     @Query("SELECT DISTINCT r FROM Restaurant r JOIN FETCH r.meals m WHERE m.date = :date")
     List<Restaurant> findAllWithMealsForToday(@Param("date") LocalDate date);
+
+    @Query("SELECT new com.graduation.topjava.dto.RestaurantWithNumberVoicesDto(r.id, r.name, COUNT(v.id)) " +
+            "FROM Restaurant r " +
+            "LEFT JOIN Voice v ON v.restaurant.id = r.id AND v.date = :date " +
+            "GROUP BY r.id")
+    List<RestaurantWithNumberVoicesDto> findAllWithNumberVoicesForToday(@Param("date") LocalDate date);
+
 }

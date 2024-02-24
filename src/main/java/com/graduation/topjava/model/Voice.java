@@ -29,16 +29,9 @@ public class Voice extends AbstractBaseEntity {
     private User user;
 
     public Voice() {
-    }
-
-    public Voice(LocalDate date, LocalTime time) {
-        this(null, date, time);
-    }
-
-    public Voice(Integer id, LocalDate date, LocalTime time) {
-        super(id);
-        this.date = date;
-        this.time = time;
+        super(null);
+        this.date = LocalDate.now();
+        this.time = LocalTime.now();
     }
 
     public LocalDate getDate() {

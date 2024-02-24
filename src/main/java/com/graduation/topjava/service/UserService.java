@@ -4,6 +4,7 @@ import com.graduation.topjava.model.User;
 import com.graduation.topjava.repository.CrudUserRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserService {
         this.crudUserRepository = crudUserRepository;
     }
 
+    @Transactional
     public User save(User user) {
         Assert.notNull(user, "user must not be null");
         return user.isNew() || get(user.id()) != null ? crudUserRepository.save(user) : null;

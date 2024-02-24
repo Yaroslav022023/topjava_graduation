@@ -24,6 +24,6 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     List<Meal> findAllByRestaurantId(@Param("restaurantId") int restaurantId);
 
     @Query("SELECT m FROM Meal m WHERE m.name=:name AND m.date=:date AND m.restaurant.id=:restaurantId")
-    Meal checkDuplicate(@Param("name") String name, @Param("date") LocalDate date,
-                        @Param("restaurantId") int restaurantId);
+    Meal findDuplicate(@Param("name") String name, @Param("date") LocalDate date,
+                       @Param("restaurantId") int restaurantId);
 }

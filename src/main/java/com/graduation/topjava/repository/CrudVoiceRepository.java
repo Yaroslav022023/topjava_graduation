@@ -10,9 +10,6 @@ import java.time.LocalDate;
 
 @Transactional(readOnly = true)
 public interface CrudVoiceRepository extends JpaRepository<Voice, Integer> {
-    @Query("SELECT v FROM Voice v WHERE v.id=:id AND v.user.id=:userId AND v.date = :date")
-    Voice findByIdAndUserIdForToday(@Param("id") int id, @Param("userId") int userId, @Param("date") LocalDate date);
-
-    @Query("SELECT v FROM Voice v WHERE v.user.id = :userId AND v.date = :date")
+    @Query("SELECT v FROM Voice v WHERE v.user.id=:userId AND v.date=:date")
     Voice findByUserIdForToday(@Param("userId") int userId, @Param("date") LocalDate date);
 }
