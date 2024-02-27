@@ -11,7 +11,6 @@
     <context:component-scan base-package="com.graduation.topjava.repository"/>
     <jpa:repositories base-package="com.graduation.topjava.repository"/>
     <context:component-scan base-package="com.graduation.topjava.service"/>
-    <context:component-scan base-package="com.graduation.topjava.web"/>
 
     <context:property-placeholder location="classpath:db/hsqldb.properties" system-properties-mode="OVERRIDE"/>
 

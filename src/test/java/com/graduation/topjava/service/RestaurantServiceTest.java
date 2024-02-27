@@ -1,9 +1,7 @@
 package com.graduation.topjava.service;
 
 import com.graduation.topjava.RestaurantTestData;
-import com.graduation.topjava.VoiceTestData;
 import com.graduation.topjava.model.Restaurant;
-import com.graduation.topjava.model.Voice;
 import com.graduation.topjava.util.RestaurantUtil;
 import com.graduation.topjava.util.exception.NotFoundException;
 import com.graduation.topjava.util.exception.VotingRestrictionsException;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.graduation.topjava.MealTestData.NOT_FOUND;
 import static com.graduation.topjava.RestaurantTestData.*;
 import static com.graduation.topjava.UserTestData.*;
-import static com.graduation.topjava.VoiceTestData.VOICE_MATCHER;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RestaurantServiceTest extends AbstractServiceTest {
@@ -84,12 +81,9 @@ public class RestaurantServiceTest extends AbstractServiceTest {
 
     @Test
     void vote() {
-        Voice created = service.vote(VoiceTestData.getNew(), ADMIN_ID, FRENCH_ID);
-        int newId = created.id();
-        Voice newVoice = VoiceTestData.getNew();
-        newVoice.setId(newId);
+        assertThrows(NotFoundException.class, () -> service.getVotedByUser(ADMIN_ID));
 
-        VOICE_MATCHER.assertMatch(created, newVoice);
+        service.vote(ADMIN_ID, FRENCH_ID);
 
         RESTAURANT_VOTED_BY_USER_DTO_MATCHER.assertMatch(
                 service.getVotedByUser(ADMIN_ID), RestaurantUtil.convertToVotedByUserDto(french));
@@ -102,7 +96,7 @@ public class RestaurantServiceTest extends AbstractServiceTest {
 
     @Test
     void voteChange() {
-        service.vote(VoiceTestData.getNew(), USER_1_ID, FRENCH_ID);
+        service.vote(USER_1_ID, FRENCH_ID);
 
         RESTAURANT_VOTED_BY_USER_DTO_MATCHER.assertMatch(
                 service.getVotedByUser(USER_1_ID), RestaurantUtil.convertToVotedByUserDto(french));
@@ -118,7 +112,7 @@ public class RestaurantServiceTest extends AbstractServiceTest {
     @Test
     void voteRestrictions() {
         assertThrows(VotingRestrictionsException.class, () ->
-                service.vote(VoiceTestData.getNew(), USER_3_ID, FRENCH_ID));
+                service.vote(USER_3_ID, FRENCH_ID));
     }
 
     @Test

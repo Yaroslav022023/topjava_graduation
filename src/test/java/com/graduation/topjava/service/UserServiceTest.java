@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.graduation.topjava.MealTestData.NOT_FOUND;
 import static com.graduation.topjava.UserTestData.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest extends AbstractServiceTest {
 
@@ -73,5 +73,13 @@ public class UserServiceTest extends AbstractServiceTest {
     @Test
     void getByEmailNotFound() {
         assertThrows(NotFoundException.class, () -> service.getByEmail("notFound@gmail.com"));
+    }
+
+    @Test
+    void enable() {
+        service.enable(USER_1_ID, false);
+        assertFalse(service.get(USER_1_ID).isEnabled());
+        service.enable(USER_1_ID, true);
+        assertTrue(service.get(USER_1_ID).isEnabled());
     }
 }

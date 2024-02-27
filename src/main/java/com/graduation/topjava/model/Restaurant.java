@@ -1,5 +1,7 @@
 package com.graduation.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -10,6 +12,7 @@ import java.util.Set;
 @Table(name = "restaurant")
 public class Restaurant extends AbstractNamedEntity {
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<Meal> meals;
 
     public Restaurant() {

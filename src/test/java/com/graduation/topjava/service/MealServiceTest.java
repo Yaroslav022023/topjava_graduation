@@ -63,6 +63,13 @@ public class MealServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    void updateToDuplicate() {
+        Meal updated = service.get(asian_meal1.id(), ASIAN_ID);
+        updated.setName(asian_meal2.getName());
+        assertThrows(ExistException.class, () -> service.save(updated, ASIAN_ID));
+    }
+
+    @Test
     void delete() {
         service.delete(asian_meal1.id(), ASIAN_ID);
         assertThrows(NotFoundException.class, () -> service.get(asian_meal1.id(), ASIAN_ID));

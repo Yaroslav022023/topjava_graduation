@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.graduation.topjava.util.ValidationUtil.checkNotFoundWithId;
@@ -34,22 +35,6 @@ public class RestaurantService {
         this.crudUserRepository = crudUserRepository;
     }
 
-    @Transactional
-    @CacheEvict(value = "restaurants", allEntries = true)
-    public Restaurant save(Restaurant restaurant) {
-        Assert.notNull(restaurant, "restaurant must not be null");
-        return restaurant.isNew() || get(restaurant.id()) != null ? crudRestaurantRepository.save(restaurant) : null;
-    }
-
-    public Restaurant get(int id) {
-        return checkNotFoundWithId(crudRestaurantRepository.findById(id).orElse(null), id);
-    }
-
-    @CacheEvict(value = "restaurants", allEntries = true)
-    public void delete(int id) {
-        checkNotFoundWithId(crudRestaurantRepository.delete(id) != 0, id);
-    }
-
     public List<Restaurant> getAll() {
         return crudRestaurantRepository.findAll();
     }
@@ -63,21 +48,8 @@ public class RestaurantService {
         return crudRestaurantRepository.findAllWithNumberVoicesForToday(LocalDate.now());
     }
 
-    @Transactional
-    public Voice vote(Voice voice, int userId, int restaurantId) {
-        Assert.notNull(voice, "voice must not be null");
-        Voice existing = crudVoiceRepository.findByUserIdForToday(userId, LocalDate.now());
-        if (existing != null) {
-            if (isAvailableUpdate(existing)) {
-                existing.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
-                return crudVoiceRepository.save(existing);
-            }
-        } else {
-            voice.setUser(crudUserRepository.getReferenceById(userId));
-            voice.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
-            return crudVoiceRepository.save(voice);
-        }
-        return null;
+    public Restaurant get(int id) {
+        return checkNotFoundWithId(crudRestaurantRepository.findById(id).orElse(null), id);
     }
 
     public RestaurantVotedByUserDto getVotedByUser(int userId) {
@@ -85,5 +57,33 @@ public class RestaurantService {
                 checkNotFoundWithId(crudVoiceRepository.findByUserIdForToday(userId, LocalDate.now()), userId)
                         .getRestaurant();
         return restaurant != null ? RestaurantUtil.convertToVotedByUserDto(restaurant) : null;
+    }
+
+    @Transactional
+    @CacheEvict(value = "restaurants", allEntries = true)
+    public Restaurant save(Restaurant restaurant) {
+        Assert.notNull(restaurant, "restaurant must not be null");
+        return restaurant.isNew() || get(restaurant.id()) != null ? crudRestaurantRepository.save(restaurant) : null;
+    }
+
+    @CacheEvict(value = "restaurants", allEntries = true)
+    public void delete(int id) {
+        checkNotFoundWithId(crudRestaurantRepository.delete(id) != 0, id);
+    }
+
+    @Transactional
+    public void vote(int userId, int restaurantId) {
+        Voice existing = crudVoiceRepository.findByUserIdForToday(userId, LocalDate.now());
+        if (existing != null) {
+            if (isAvailableUpdate(existing)) {
+                existing.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
+                existing.setTime(LocalTime.now());
+            }
+        } else {
+            Voice voice = new Voice();
+            voice.setUser(crudUserRepository.getReferenceById(userId));
+            voice.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
+            crudVoiceRepository.save(voice);
+        }
     }
 }

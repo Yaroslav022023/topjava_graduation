@@ -23,6 +23,14 @@ public class MealService {
         this.crudRestaurantRepository = crudRestaurantRepository;
     }
 
+    public List<Meal> getAll(int restaurantId) {
+        return crudMealRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    public Meal get(int id, int restaurantId) {
+        return checkNotFoundWithId(crudMealRepository.findByIdAndRestaurantId(id, restaurantId), id);
+    }
+
     @Transactional
     @CacheEvict(value = "restaurants", allEntries = true)
     public Meal save(Meal meal, int restaurantId) {
@@ -37,16 +45,8 @@ public class MealService {
         return null;
     }
 
-    public Meal get(int id, int restaurantId) {
-        return checkNotFoundWithId(crudMealRepository.findByIdAndRestaurantId(id, restaurantId), id);
-    }
-
     @CacheEvict(value = "restaurants", allEntries = true)
     public void delete(int id, int restaurantId) {
         checkNotFoundWithId(crudMealRepository.delete(id, restaurantId) != 0, id);
-    }
-
-    public List<Meal> getAll(int restaurantId) {
-        return crudMealRepository.findAllByRestaurantId(restaurantId);
     }
 }

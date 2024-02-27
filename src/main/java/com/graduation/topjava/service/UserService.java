@@ -1,7 +1,9 @@
 package com.graduation.topjava.service;
 
+import com.graduation.topjava.dto.UserDto;
 import com.graduation.topjava.model.User;
 import com.graduation.topjava.repository.CrudUserRepository;
+import com.graduation.topjava.util.UsersUtil;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +23,12 @@ public class UserService {
         this.crudUserRepository = crudUserRepository;
     }
 
-    @Transactional
-    public User save(User user) {
-        Assert.notNull(user, "user must not be null");
-        return user.isNew() || get(user.id()) != null ? crudUserRepository.save(user) : null;
+    public List<User> getAll() {
+        return crudUserRepository.findAll(SORT_NAME_EMAIL);
     }
 
     public User get(int id) {
         return checkNotFoundWithId(crudUserRepository.findById(id).orElse(null), id);
-    }
-
-    public void delete(int id) {
-        checkNotFoundWithId(crudUserRepository.delete(id) != 0, id);
     }
 
     public User getByEmail(String email) {
@@ -40,7 +36,34 @@ public class UserService {
         return checkNotFound(crudUserRepository.findByEmail(email), "email=" + email);
     }
 
-    public List<User> getAll() {
-        return crudUserRepository.findAll(SORT_NAME_EMAIL);
+    @Transactional
+    public User save(User user) {
+        Assert.notNull(user, "user must not be null");
+        return user.isNew() || get(user.id()) != null ? crudUserRepository.save(user) : null;
+    }
+
+    @Transactional
+    public User save(UserDto userDto) {
+        Assert.notNull(userDto, "user must not be null");
+        if (userDto.isNew()) {
+            return crudUserRepository.save(UsersUtil.createNewFromDto(userDto));
+        }
+
+        User user = get(userDto.id());
+        if (user != null) {
+            UsersUtil.updateFromDto(user, userDto);
+            return user;
+        }
+        return null;
+    }
+
+    public void delete(int id) {
+        checkNotFoundWithId(crudUserRepository.delete(id) != 0, id);
+    }
+
+    @Transactional
+    public void enable(int id, boolean enabled) {
+        User user = get(id);
+        user.setEnabled(enabled);
     }
 }

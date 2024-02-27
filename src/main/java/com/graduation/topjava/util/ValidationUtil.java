@@ -1,6 +1,7 @@
 package com.graduation.topjava.util;
 
 
+import com.graduation.topjava.model.AbstractBaseEntity;
 import com.graduation.topjava.util.exception.ExistException;
 import com.graduation.topjava.util.exception.NotFoundException;
 
@@ -33,6 +34,20 @@ public class ValidationUtil {
     public static void checkDuplicate(boolean found, String msg) {
         if (found) {
             throw new ExistException(msg);
+        }
+    }
+
+    public static void checkNew(AbstractBaseEntity bean) {
+        if (!bean.isNew()) {
+            throw new IllegalArgumentException(bean + " must be new (id=null)");
+        }
+    }
+
+    public static void assureIdConsistent(AbstractBaseEntity bean, int id) {
+        if (bean.isNew()) {
+            bean.setId(id);
+        } else if (bean.id() != id) {
+            throw new IllegalArgumentException(bean + " must be with id=" + id);
         }
     }
 }
