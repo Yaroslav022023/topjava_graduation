@@ -2,7 +2,6 @@ package com.graduation.topjava.util;
 
 
 import com.graduation.topjava.model.AbstractBaseEntity;
-import com.graduation.topjava.util.exception.ExistException;
 import com.graduation.topjava.util.exception.NotFoundException;
 
 
@@ -28,12 +27,6 @@ public class ValidationUtil {
     public static void checkNotFound(boolean found, String msg) {
         if (!found) {
             throw new NotFoundException("Not found entity with " + msg);
-        }
-    }
-
-    public static void checkDuplicate(boolean found, String msg) {
-        if (found) {
-            throw new ExistException(msg);
         }
     }
 

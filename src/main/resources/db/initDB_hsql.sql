@@ -39,6 +39,7 @@ CREATE TABLE meal
     date              DATE         NOT NULL,
     name              VARCHAR(255) NOT NULL,
     price             INt          NOT NULL,
+    CONSTRAINT meal_restaurant_id_date_name_idx UNIQUE (restaurant_id, date, name),
     FOREIGN KEY (restaurant_id) REFERENCES RESTAURANT (id) ON DELETE CASCADE
 );
 CREATE INDEX meal_restaurant_datetime_idx ON meal (restaurant_id, date)

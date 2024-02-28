@@ -1,7 +1,7 @@
 package com.graduation.topjava.util;
 
-import com.graduation.topjava.model.Meal;
 import com.graduation.topjava.dto.MealViewDto;
+import com.graduation.topjava.model.Meal;
 
 import java.util.Set;
 import java.util.stream.Collectors;

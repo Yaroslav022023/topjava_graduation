@@ -10,7 +10,6 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
-import static com.graduation.topjava.util.ValidationUtil.checkDuplicate;
 import static com.graduation.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -35,14 +34,11 @@ public class MealService {
     @CacheEvict(value = "restaurants", allEntries = true)
     public Meal save(Meal meal, int restaurantId) {
         Assert.notNull(meal, "meal must not be null");
-        if (meal.isNew() || get(meal.id(), restaurantId) != null) {
-            checkDuplicate(crudMealRepository.findDuplicate(meal.getName(), meal.getDate(), restaurantId) != null,
-                    meal.getName() + " " + meal.getDate().toString());
-
-            meal.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
-            return crudMealRepository.save(meal);
+        if (!meal.isNew() && get(meal.id(), restaurantId) == null) {
+            return null;
         }
-        return null;
+        meal.setRestaurant(crudRestaurantRepository.getReferenceById(restaurantId));
+        return crudMealRepository.save(meal);
     }
 
     @CacheEvict(value = "restaurants", allEntries = true)
