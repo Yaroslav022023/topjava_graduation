@@ -12,6 +12,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.graduation.topjava.RestaurantTestData.*;
+import static com.graduation.topjava.TestUtil.userHttpBasic;
+import static com.graduation.topjava.UserTestData.user_1;
+import static com.graduation.topjava.UserTestData.user_3;
 import static com.graduation.topjava.util.RestaurantUtil.convertToViewDtos;
 import static com.graduation.topjava.util.RestaurantUtil.convertToVotedByUserDto;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,15 +29,14 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAllWithMealsForToday() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_VIEW_DTO_MATCHER.contentJson(convertToViewDtos(restaurants)));
     }
 
-    @Disabled
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
@@ -43,8 +45,8 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAllWithNumberVoicesForToday() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/number-voices"))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/number-voices")
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -53,8 +55,8 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getVotedByUser() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/voted-by-user"))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.get(REST_URL + "/voted-by-user")
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -63,8 +65,8 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
 
     @Test
     void vote() throws Exception {
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.id()))
-//                .with(userHttpBasic(UserTestData.user)))
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.id())
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isCreated());
 
         RestaurantVotedByUserDto created = RESTAURANT_VOTED_BY_USER_DTO_MATCHER.readFromJson(action);
@@ -81,9 +83,10 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
     @Disabled
     @Test
     void voteRestrictions() throws Exception {
-        assertThrows(VotingRestrictionsException.class, () ->
-                perform(MockMvcRequestBuilders.post(REST_URL + asian.getId()))
-//                        .with(userHttpBasic(UserTestData.user_3)))
-                        .andExpect(status().isCreated()));
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.getId())
+                .with(userHttpBasic(user_3)))
+                .andExpect(status().isCreated());
+
+        assertThrows(VotingRestrictionsException.class, () -> action.andReturn().getResponse().getContentAsString());
     }
 }

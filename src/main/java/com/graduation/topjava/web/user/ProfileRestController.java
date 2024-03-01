@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import static com.graduation.topjava.web.security.SecurityUtil.authUserId;
+
 @RestController
 @RequestMapping(value = ProfileRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProfileRestController extends AbstractUserController {
@@ -13,18 +15,18 @@ public class ProfileRestController extends AbstractUserController {
 
     @GetMapping
     public User get() {
-        return super.get(100001);
+        return super.get(authUserId());
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody UserDto userDto) {
-        super.update(userDto, 100001);
+        super.update(userDto, authUserId());
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete() {
-        super.delete(100001);
+        super.delete(authUserId());
     }
 }

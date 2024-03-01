@@ -8,8 +8,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.annotation.PostConstruct;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @SpringJUnitWebConfig(locations = {
         "classpath:spring/spring-config.xml",
@@ -21,11 +24,18 @@ public abstract class AbstractControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    private static final CharacterEncodingFilter CHARACTER_ENCODING_FILTER = new CharacterEncodingFilter();
+
+    static {
+        CHARACTER_ENCODING_FILTER.setEncoding("UTF-8");
+        CHARACTER_ENCODING_FILTER.setForceEncoding(true);
+    }
+
     @PostConstruct
     private void postConstruct() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
-//                .apply(springSecurity())
+                .apply(springSecurity())
                 .build();
     }
 

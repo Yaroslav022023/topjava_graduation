@@ -11,6 +11,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import static com.graduation.topjava.web.security.SecurityUtil.authUserId;
+
 @RestController
 @RequestMapping(value = UserRestaurantRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserRestaurantRestController extends AbstractRestaurantController {
@@ -31,12 +33,12 @@ public class UserRestaurantRestController extends AbstractRestaurantController {
 
     @GetMapping("/voted-by-user")
     public RestaurantVotedByUserDto getVotedByUser() {
-        return super.getVotedByUser(100001);
+        return super.getVotedByUser(authUserId());
     }
 
     @PostMapping(value = "{restaurantId}")
     public ResponseEntity<RestaurantVotedByUserDto> vote(@PathVariable int restaurantId) {
-        super.vote(100001, restaurantId);
+        super.vote(authUserId(), restaurantId);
         URI uriOfVotedByUser = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/voted-by-user")
                 .build().toUri();

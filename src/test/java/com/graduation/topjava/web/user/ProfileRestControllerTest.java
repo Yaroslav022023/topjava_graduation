@@ -6,12 +6,12 @@ import com.graduation.topjava.service.UserService;
 import com.graduation.topjava.util.UsersUtil;
 import com.graduation.topjava.web.AbstractControllerTest;
 import com.graduation.topjava.web.json.JsonUtil;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.graduation.topjava.TestUtil.userHttpBasic;
 import static com.graduation.topjava.UserTestData.*;
 import static com.graduation.topjava.web.user.ProfileRestController.REST_URL;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -24,14 +24,13 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL))
-//                .with(userHttpBasic(user)))
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user_1));
     }
 
-    @Disabled
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
@@ -41,7 +40,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
-//                .with(userHttpBasic(user))
+                .with(userHttpBasic(user_1))
                 .content(JsonUtil.writeValue(getUpdatedDto())))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -52,8 +51,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL))
-//                .with(userHttpBasic(user)))
+        perform(MockMvcRequestBuilders.delete(REST_URL)
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isNoContent());
         USER_MATCHER.assertMatch(service.getAll(), admin, guest, user_2, user_3);
     }

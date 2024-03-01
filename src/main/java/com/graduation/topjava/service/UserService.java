@@ -4,7 +4,12 @@ import com.graduation.topjava.dto.UserDto;
 import com.graduation.topjava.model.User;
 import com.graduation.topjava.repository.CrudUserRepository;
 import com.graduation.topjava.util.UsersUtil;
+import com.graduation.topjava.web.security.AuthorizedUser;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -14,8 +19,9 @@ import java.util.List;
 import static com.graduation.topjava.util.ValidationUtil.checkNotFound;
 import static com.graduation.topjava.util.ValidationUtil.checkNotFoundWithId;
 
-@Service
-public class UserService {
+@Service()
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class UserService implements UserDetailsService {
     private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email");
     private final CrudUserRepository crudUserRepository;
 
@@ -63,5 +69,14 @@ public class UserService {
     public void enable(int id, boolean enabled) {
         User user = get(id);
         user.setEnabled(enabled);
+    }
+
+    @Override
+    public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = getByEmail(email.toLowerCase());
+        if (user == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(user);
     }
 }

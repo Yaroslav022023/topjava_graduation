@@ -5,7 +5,6 @@ import com.graduation.topjava.service.MealService;
 import com.graduation.topjava.util.exception.NotFoundException;
 import com.graduation.topjava.web.AbstractControllerTest;
 import com.graduation.topjava.web.json.JsonUtil;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.graduation.topjava.MealTestData.*;
 import static com.graduation.topjava.RestaurantTestData.ITALIAN_ID;
+import static com.graduation.topjava.TestUtil.userHttpBasic;
+import static com.graduation.topjava.UserTestData.admin;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,8 +29,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getAll() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(admin)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -38,15 +39,14 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + italian_meal1.id()))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.get(REST_URL + italian_meal1.id())
+                .with(userHttpBasic(admin)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_MATCHER.contentJson(italian_meal1));
     }
 
-    @Disabled
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + italian_meal1.id()))
@@ -57,7 +57,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
-//                .with(userHttpBasic(UserTestData.user))
+                .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal)))
                 .andExpect(status().isCreated());
@@ -73,7 +73,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + italian_meal1.id())
                 .contentType(MediaType.APPLICATION_JSON)
-//                .with(userHttpBasic(UserTestData.user))
+                .with(userHttpBasic(admin))
                 .content(JsonUtil.writeValue(getUpdated())))
                 .andExpect(status().isNoContent());
         MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), getUpdated());
@@ -81,8 +81,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + italian_meal1.id()))
-//                .with(userHttpBasic(UserTestData.user)))
+        perform(MockMvcRequestBuilders.delete(REST_URL + italian_meal1.id())
+                .with(userHttpBasic(admin)))
                 .andExpect(status().isNoContent());
         assertThrows(NotFoundException.class, () -> service.get(italian_meal1.id(), ITALIAN_ID));
     }
