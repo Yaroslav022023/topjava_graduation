@@ -8,6 +8,9 @@ public class RestaurantViewDto {
     private String name;
     private Set<MealViewDto> meals;
 
+    public RestaurantViewDto() {
+    }
+
     public RestaurantViewDto(Integer id, String name, Set<MealViewDto> meals) {
         this.id = id;
         this.name = name;

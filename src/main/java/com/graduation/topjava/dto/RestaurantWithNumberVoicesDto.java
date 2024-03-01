@@ -7,6 +7,9 @@ public class RestaurantWithNumberVoicesDto {
     private String name;
     private int voices;
 
+    public RestaurantWithNumberVoicesDto() {
+    }
+
     public RestaurantWithNumberVoicesDto(Integer id, String name, long voices) {
         this.id = id;
         this.name = name;

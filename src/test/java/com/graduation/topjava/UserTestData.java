@@ -1,5 +1,6 @@
 package com.graduation.topjava;
 
+import com.graduation.topjava.dto.UserDto;
 import com.graduation.topjava.model.Role;
 import com.graduation.topjava.model.User;
 
@@ -35,5 +36,9 @@ public class UserTestData {
         updated.setEnabled(false);
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
+    }
+
+    public static UserDto getUpdatedDto() {
+        return new UserDto(null, "New_user", "new@gmail.com", "newPass");
     }
 }

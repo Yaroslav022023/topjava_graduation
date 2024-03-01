@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "voice",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "user_date_idx")},
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "date"}, name = "user_id_date_idx")},
         indexes = {@Index(columnList = "date", name = "idx_voice_date")})
 public class Voice extends AbstractBaseEntity {
     @Column(name = "date", nullable = false)

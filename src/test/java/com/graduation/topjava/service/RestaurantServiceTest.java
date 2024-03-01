@@ -111,8 +111,7 @@ public class RestaurantServiceTest extends AbstractServiceTest {
 
     @Test
     void voteRestrictions() {
-        assertThrows(VotingRestrictionsException.class, () ->
-                service.vote(USER_3_ID, FRENCH_ID));
+        assertThrows(VotingRestrictionsException.class, () -> service.vote(USER_3_ID, FRENCH_ID));
     }
 
     @Test

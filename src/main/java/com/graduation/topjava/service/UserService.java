@@ -48,11 +48,9 @@ public class UserService {
         if (userDto.isNew()) {
             return crudUserRepository.save(UsersUtil.createNewFromDto(userDto));
         }
-
         User user = get(userDto.id());
         if (user != null) {
-            UsersUtil.updateFromDto(user, userDto);
-            return user;
+            return UsersUtil.updateFromDto(user, userDto);
         }
         return null;
     }

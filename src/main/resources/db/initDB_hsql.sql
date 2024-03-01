@@ -22,7 +22,7 @@ CREATE TABLE user_role
 (
     user_id    INTEGER NOT NULL,
     role       VARCHAR(5) NOT NULL,
-    CONSTRAINT user_roles_idx UNIQUE (user_id, role),
+    CONSTRAINT user_id_role_idx UNIQUE (user_id, role),
     FOREIGN KEY (user_id) REFERENCES USERS (id) ON DELETE CASCADE
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE voice
     restaurant_id     INTEGER      NOT NULL,
     date              DATE         NOT NULL,
     time              TIME         NOT NULL,
-    CONSTRAINT user_date_idx UNIQUE (user_id, date),
+    CONSTRAINT user_id_date_idx UNIQUE (user_id, date),
     FOREIGN KEY (user_id) REFERENCES USERS (id) ON DELETE CASCADE,
     FOREIGN KEY (restaurant_id) REFERENCES RESTAURANT (id) ON DELETE CASCADE
 );

@@ -7,6 +7,9 @@ public class MealViewDto {
     private String name;
     private long price;
 
+    public MealViewDto() {
+    }
+
     public MealViewDto(Integer id, String name, long price) {
         this.id = id;
         this.name = name;

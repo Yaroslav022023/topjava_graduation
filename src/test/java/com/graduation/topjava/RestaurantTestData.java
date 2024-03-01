@@ -49,4 +49,10 @@ public class RestaurantTestData {
     public static Restaurant getUpdated() {
         return new Restaurant(ITALIAN_ID, "Updated Restaurant");
     }
+
+    public static List<RestaurantWithNumberVoicesDto> getWithNumberVoicesDtos() {
+        return List.of(new RestaurantWithNumberVoicesDto(ITALIAN_ID, "Italian", 2),
+                new RestaurantWithNumberVoicesDto(ASIAN_ID, "Asian", 1),
+                new RestaurantWithNumberVoicesDto(FRENCH_ID, "French", 0));
+    }
 }

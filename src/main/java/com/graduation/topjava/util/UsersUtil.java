@@ -10,9 +10,10 @@ public class UsersUtil {
         return new User(null, userDto.getName(), userDto.getEmail().toLowerCase(), userDto.getPassword(), Role.USER);
     }
 
-    public static void updateFromDto(User user, UserDto userDto) {
+    public static User updateFromDto(User user, UserDto userDto) {
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail().toLowerCase());
         user.setPassword(userDto.getPassword());
+        return user;
     }
 }

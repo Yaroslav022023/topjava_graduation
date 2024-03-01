@@ -11,7 +11,10 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "meal",
-        indexes = {@Index(columnList = "restaurant_id, date", name = "meal_restaurant_datetime_idx")})
+        indexes = {@Index(columnList = "restaurant_id, date", name = "meal_restaurant_datetime_idx")},
+        uniqueConstraints =
+                {@UniqueConstraint(columnNames =
+                        {"restaurant_id", "date", "name"}, name = "meal_restaurant_id_date_name_idx")})
 public class Meal extends AbstractNamedEntity {
     @Column(name = "date", nullable = false)
     @NotNull
