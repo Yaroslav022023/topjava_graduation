@@ -1,5 +1,6 @@
 package com.graduation.topjava.web.user;
 
+import com.graduation.topjava.dto.UserDto;
 import com.graduation.topjava.model.Role;
 import com.graduation.topjava.model.User;
 import com.graduation.topjava.service.UserService;
@@ -9,6 +10,7 @@ import com.graduation.topjava.web.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.graduation.topjava.TestUtil.userHttpBasic;
@@ -35,6 +37,23 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void register() throws Exception {
+        UserDto newDto = new UserDto(null, "newName", "newemail@ya.ru", "newPassword");
+        User newUser = UsersUtil.createNewFromDto(newDto);
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newDto)))
+                .andDo(print())
+                .andExpect(status().isCreated());
+
+        User created = USER_MATCHER.readFromJson(action);
+        int newId = created.id();
+        newUser.setId(newId);
+        USER_MATCHER.assertMatch(created, newUser);
+        USER_MATCHER.assertMatch(service.get(newId), newUser);
     }
 
     @Test
