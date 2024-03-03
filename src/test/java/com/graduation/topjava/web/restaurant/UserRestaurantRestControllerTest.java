@@ -2,9 +2,7 @@ package com.graduation.topjava.web.restaurant;
 
 import com.graduation.topjava.dto.RestaurantVotedByUserDto;
 import com.graduation.topjava.service.RestaurantService;
-import com.graduation.topjava.util.exception.VotingRestrictionsException;
 import com.graduation.topjava.web.AbstractControllerTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,7 +15,6 @@ import static com.graduation.topjava.UserTestData.user_1;
 import static com.graduation.topjava.UserTestData.user_3;
 import static com.graduation.topjava.util.RestaurantUtil.convertToViewDtos;
 import static com.graduation.topjava.util.RestaurantUtil.convertToVotedByUserDto;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,13 +77,10 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
         restaurantsWithNumberVoices.get(1).setVoices(1);
     }
 
-    @Disabled
     @Test
     void voteRestrictions() throws Exception {
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.getId())
+        perform(MockMvcRequestBuilders.post(REST_URL + asian.getId())
                 .with(userHttpBasic(user_3)))
-                .andExpect(status().isCreated());
-
-        assertThrows(VotingRestrictionsException.class, () -> action.andReturn().getResponse().getContentAsString());
+                .andExpect(status().isUnprocessableEntity());
     }
 }

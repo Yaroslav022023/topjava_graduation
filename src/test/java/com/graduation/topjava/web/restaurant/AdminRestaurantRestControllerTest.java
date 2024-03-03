@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.graduation.topjava.MealTestData.NOT_FOUND;
 import static com.graduation.topjava.RestaurantTestData.*;
 import static com.graduation.topjava.TestUtil.userHttpBasic;
 import static com.graduation.topjava.UserTestData.admin;
@@ -34,12 +35,6 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(restaurants));
-    }
-
-    @Test
-    void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "all"))
-                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -70,6 +65,20 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(RESTAURANT_MATCHER.contentJson(italian));
+    }
+
+    @Test
+    void getNotFound() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND)
+                .with(userHttpBasic(admin)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void getUnAuth() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "all"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -114,5 +123,12 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isNoContent());
         assertThrows(NotFoundException.class, () -> service.get(italian.id()));
+    }
+
+    @Test
+    void deleteNotFound() throws Exception {
+        perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND)
+                .with(userHttpBasic(admin)))
+                .andExpect(status().isUnprocessableEntity());
     }
 }
