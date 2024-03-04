@@ -20,9 +20,9 @@ public class UserTestData {
     public static final int GUEST_ID = START_SEQ + 4;
 
     public static final User admin = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ADMIN, Role.USER);
-    public static final User user_1 = new User(USER_1_ID, "User_1", "user_1@yandex.ru", "password_1", Role.USER);
-    public static final User user_2 = new User(USER_2_ID, "User_2", "user_2@yandex.ru", "password_2", Role.USER);
-    public static final User user_3 = new User(USER_3_ID, "User_3", "user_3@yandex.ru", "password_3", Role.USER);
+    public static final User user_1 = new User(USER_1_ID, "User_1", "user_1@gmail.com", "password_1", Role.USER);
+    public static final User user_2 = new User(USER_2_ID, "User_2", "user_2@gmail.com", "password_2", Role.USER);
+    public static final User user_3 = new User(USER_3_ID, "User_3", "user_3@gmail.com", "password_3", Role.USER);
     public static final User guest = new User(GUEST_ID, "Guest", "guest@gmail.com", "guest");
 
     public static final List<User> users = List.of(admin, guest, user_1, user_2, user_3);

@@ -2,7 +2,10 @@ package com.graduation.topjava.util;
 
 
 import com.graduation.topjava.model.AbstractBaseEntity;
+import com.graduation.topjava.util.exception.IllegalRequestDataException;
 import com.graduation.topjava.util.exception.NotFoundException;
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.lang.NonNull;
 
 
 public class ValidationUtil {
@@ -32,7 +35,7 @@ public class ValidationUtil {
 
     public static void checkNew(AbstractBaseEntity bean) {
         if (!bean.isNew()) {
-            throw new IllegalArgumentException(bean + " must be new (id=null)");
+            throw new IllegalRequestDataException(bean + " must be new (id=null)");
         }
     }
 
@@ -40,7 +43,13 @@ public class ValidationUtil {
         if (bean.isNew()) {
             bean.setId(id);
         } else if (bean.id() != id) {
-            throw new IllegalArgumentException(bean + " must be with id=" + id);
+            throw new IllegalRequestDataException(bean + " must be with id=" + id);
         }
+    }
+
+    @NonNull
+    public static Throwable getRootCause(@NonNull Throwable t) {
+        Throwable rootCause = NestedExceptionUtils.getRootCause(t);
+        return rootCause != null ? rootCause : t;
     }
 }
