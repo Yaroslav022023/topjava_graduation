@@ -7,11 +7,12 @@ import com.graduation.topjava.model.User;
 import java.util.Collections;
 import java.util.List;
 
+import static com.graduation.topjava.web.json.TestJsonUtil.writeAdditionProps;
 import static com.graduation.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
     public static final MatcherFactory.Matcher<User> USER_MATCHER =
-            MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered");
+            MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "password");
 
     public static final int ADMIN_ID = START_SEQ;
     public static final int USER_1_ID = START_SEQ + 1;
@@ -40,5 +41,9 @@ public class UserTestData {
 
     public static UserDto getUpdatedDto() {
         return new UserDto(null, "New_user", "new@gmail.com", "newPass");
+    }
+
+    public static String jsonWithPassword(User user, String passw) {
+        return writeAdditionProps(user, "password", passw);
     }
 }

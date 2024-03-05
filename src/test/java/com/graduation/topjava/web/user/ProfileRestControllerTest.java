@@ -6,13 +6,13 @@ import com.graduation.topjava.model.User;
 import com.graduation.topjava.service.UserService;
 import com.graduation.topjava.util.UsersUtil;
 import com.graduation.topjava.web.AbstractControllerTest;
-import com.graduation.topjava.web.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.graduation.topjava.web.json.TestJsonUtil.writeValue;
 import static com.graduation.topjava.TestUtil.userHttpBasic;
 import static com.graduation.topjava.UserTestData.*;
 import static com.graduation.topjava.web.user.ProfileRestController.REST_URL;
@@ -45,7 +45,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         User newUser = UsersUtil.createNewFromDto(newDto);
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newDto)))
+                .content(writeValue(newDto)))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
@@ -60,7 +60,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user_1))
-                .content(JsonUtil.writeValue(getUpdatedDto())))
+                .content(writeValue(getUpdatedDto())))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         USER_MATCHER.assertMatch(service.get(USER_1_ID), UsersUtil.updateFromDto(

@@ -4,7 +4,6 @@ import com.graduation.topjava.model.User;
 import com.graduation.topjava.service.UserService;
 import com.graduation.topjava.util.exception.NotFoundException;
 import com.graduation.topjava.web.AbstractControllerTest;
-import com.graduation.topjava.web.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -80,7 +79,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(JsonUtil.writeValue(newUser)))
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isCreated());
 
         User created = USER_MATCHER.readFromJson(action);
@@ -95,7 +94,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + USER_2_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(JsonUtil.writeValue(getUpdated())))
+                .content(jsonWithPassword(getUpdated(), getUpdated().getPassword())))
                 .andExpect(status().isNoContent());
         USER_MATCHER.assertMatch(service.get(USER_2_ID), getUpdated());
     }

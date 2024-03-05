@@ -6,11 +6,11 @@ DELETE FROM restaurant;
 ALTER SEQUENCE global_seq RESTART WITH 100000;
 
 INSERT INTO users (name, email, password)
-VALUES ('Admin', 'admin@gmail.com', 'admin'),
-       ('User_1', 'user_1@gmail.com', 'password_1'),
-       ('User_2', 'user_2@gmail.com', 'password_2'),
-       ('User_3', 'user_3@gmail.com', 'password_3'),
-       ('Guest', 'guest@gmail.com', 'guest');
+VALUES ('Admin', 'admin@gmail.com', '{noop}admin'),
+       ('User_1', 'user_1@gmail.com', '{noop}password_1'),
+       ('User_2', 'user_2@gmail.com', '{noop}password_2'),
+       ('User_3', 'user_3@gmail.com', '{noop}password_3'),
+       ('Guest', 'guest@gmail.com', '{noop}guest');
 
 INSERT INTO user_role (role, user_id)
 VALUES ('ADMIN', 100000),

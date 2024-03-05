@@ -1,5 +1,7 @@
 package com.graduation.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -12,10 +14,12 @@ import java.time.LocalTime;
 public class Voice extends AbstractBaseEntity {
     @Column(name = "date", nullable = false)
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDate date;
 
     @Column(name = "time", nullable = false)
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalTime time;
 
     @ManyToOne(fetch = FetchType.EAGER)

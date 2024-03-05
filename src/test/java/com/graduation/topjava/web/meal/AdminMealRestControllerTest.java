@@ -4,13 +4,13 @@ import com.graduation.topjava.model.Meal;
 import com.graduation.topjava.service.MealService;
 import com.graduation.topjava.util.exception.NotFoundException;
 import com.graduation.topjava.web.AbstractControllerTest;
-import com.graduation.topjava.web.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.graduation.topjava.web.json.TestJsonUtil.writeValue;
 import static com.graduation.topjava.MealTestData.*;
 import static com.graduation.topjava.RestaurantTestData.ITALIAN_ID;
 import static com.graduation.topjava.TestUtil.userHttpBasic;
@@ -67,7 +67,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newMeal)))
+                .content(writeValue(newMeal)))
                 .andExpect(status().isCreated());
 
         Meal created = MEAL_MATCHER.readFromJson(action);
@@ -82,7 +82,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + italian_meal1.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(JsonUtil.writeValue(getUpdated())))
+                .content(writeValue(getUpdated())))
                 .andExpect(status().isNoContent());
         MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), getUpdated());
     }

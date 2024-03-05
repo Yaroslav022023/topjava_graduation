@@ -4,13 +4,13 @@ import com.graduation.topjava.model.Restaurant;
 import com.graduation.topjava.service.RestaurantService;
 import com.graduation.topjava.util.exception.NotFoundException;
 import com.graduation.topjava.web.AbstractControllerTest;
-import com.graduation.topjava.web.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.graduation.topjava.web.json.TestJsonUtil.writeValue;
 import static com.graduation.topjava.MealTestData.NOT_FOUND;
 import static com.graduation.topjava.RestaurantTestData.*;
 import static com.graduation.topjava.TestUtil.userHttpBasic;
@@ -97,7 +97,7 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newRestaurant)))
+                .content(writeValue(newRestaurant)))
                 .andExpect(status().isCreated());
 
         Restaurant created = RESTAURANT_MATCHER.readFromJson(action);
@@ -112,7 +112,7 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + italian.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(JsonUtil.writeValue(getUpdated())))
+                .content(writeValue(getUpdated())))
                 .andExpect(status().isNoContent());
         RESTAURANT_MATCHER.assertMatch(service.get(italian.id()), getUpdated());
     }

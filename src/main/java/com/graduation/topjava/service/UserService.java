@@ -10,12 +10,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
+import static com.graduation.topjava.util.UsersUtil.prepareToSave;
 import static com.graduation.topjava.util.ValidationUtil.checkNotFound;
 import static com.graduation.topjava.util.ValidationUtil.checkNotFoundWithId;
 
@@ -24,9 +26,11 @@ import static com.graduation.topjava.util.ValidationUtil.checkNotFoundWithId;
 public class UserService implements UserDetailsService {
     private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email");
     private final CrudUserRepository crudUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(CrudUserRepository crudUserRepository) {
+    public UserService(CrudUserRepository crudUserRepository, PasswordEncoder passwordEncoder) {
         this.crudUserRepository = crudUserRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAll() {
@@ -45,18 +49,19 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User save(User user) {
         Assert.notNull(user, "user must not be null");
-        return user.isNew() || get(user.id()) != null ? crudUserRepository.save(user) : null;
+        return user.isNew() || get(user.id()) != null ?
+                crudUserRepository.save(prepareToSave(user, passwordEncoder)) : null;
     }
 
     @Transactional
     public User save(UserDto userDto) {
         Assert.notNull(userDto, "user must not be null");
         if (userDto.isNew()) {
-            return crudUserRepository.save(UsersUtil.createNewFromDto(userDto));
+            return crudUserRepository.save(prepareToSave(UsersUtil.createNewFromDto(userDto), passwordEncoder));
         }
         User user = get(userDto.id());
         if (user != null) {
-            return UsersUtil.updateFromDto(user, userDto);
+            return prepareToSave(UsersUtil.updateFromDto(user, userDto), passwordEncoder);
         }
         return null;
     }
