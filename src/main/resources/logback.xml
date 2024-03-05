@@ -20,7 +20,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.graduation.topjava" level="debug"/>
+    <logger name="com.topjava.graduation" level="debug"/>
 
     <root level="info">
         <appender-ref ref="file"/>

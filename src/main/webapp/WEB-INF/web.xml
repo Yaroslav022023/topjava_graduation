@@ -4,7 +4,7 @@
 		 http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <display-name>Graduation-topjava</display-name>
+    <display-name>Graduation</display-name>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>

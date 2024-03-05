@@ -6,9 +6,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/data/jpa https://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <context:component-scan base-package="com.graduation.topjava.repository"/>
-    <jpa:repositories base-package="com.graduation.topjava.repository"/>
-    <context:component-scan base-package="com.graduation.topjava.service"/>
+    <context:component-scan base-package="com.topjava.graduation.repository"/>
+    <jpa:repositories base-package="com.topjava.graduation.repository"/>
+    <context:component-scan base-package="com.topjava.graduation.service"/>
     <import resource="spring-cache.xml"/>
     <import resource="spring-security.xml"/>
 
@@ -28,7 +28,7 @@
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           p:dataSource-ref="dataSource"
-          p:packagesToScan="com.graduation.topjava.model">
+          p:packagesToScan="com.topjava.graduation.model">
 
         <property name="jpaPropertyMap">
             <map>
