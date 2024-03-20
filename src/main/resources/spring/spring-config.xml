@@ -49,4 +49,9 @@
           p:entityManagerFactory-ref="entityManagerFactory"/>
 
     <tx:annotation-driven/>
+
+    <!--Test config-->
+    <beans profile="test">
+        <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    </beans>
 </beans>

@@ -1,20 +1,23 @@
 package com.topjava.graduation.web.user;
 
 import com.topjava.graduation.dto.UserDto;
-import com.topjava.graduation.model.Role;
 import com.topjava.graduation.model.User;
 import com.topjava.graduation.service.UserService;
 import com.topjava.graduation.util.UsersUtil;
 import com.topjava.graduation.web.AbstractControllerTest;
-import com.topjava.graduation.UserTestData;
-import com.topjava.graduation.web.json.TestJsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.topjava.graduation.TestUtil.userHttpBasic;
+import static com.topjava.graduation.UserTestData.*;
+import static com.topjava.graduation.util.UsersUtil.createNewFromDto;
+import static com.topjava.graduation.util.exception.ErrorType.VALIDATION_ERROR;
+import static com.topjava.graduation.web.user.ProfileRestController.REST_URL;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,53 +28,158 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(ProfileRestController.REST_URL)
-                .with(userHttpBasic(UserTestData.user_1)))
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(UserTestData.USER_MATCHER.contentJson(UserTestData.user_1));
+                .andExpect(USER_MATCHER.contentJson(user_1));
     }
 
     @Test
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(ProfileRestController.REST_URL))
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void register() throws Exception {
-        UserDto newDto = new UserDto(null, "newName", "newemail@ya.ru", "newPassword");
-        User newUser = UsersUtil.createNewFromDto(newDto);
-        ResultActions action = perform(MockMvcRequestBuilders.post(ProfileRestController.REST_URL)
+        UserDto newUserDto = getNewDto();
+        User newUser = createNewFromDto(newUserDto);
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(TestJsonUtil.writeValue(newDto)))
+                .content(jsonWithPassword(newUserDto, newUserDto.getPassword())))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        User created = UserTestData.USER_MATCHER.readFromJson(action);
+        User created = USER_MATCHER.readFromJson(action);
         int newId = created.id();
         newUser.setId(newId);
-        UserTestData.USER_MATCHER.assertMatch(created, newUser);
-        UserTestData.USER_MATCHER.assertMatch(service.get(newId), newUser);
+        USER_MATCHER.assertMatch(created, newUser);
+        USER_MATCHER.assertMatch(service.get(newId), newUser);
+    }
+
+    @Test
+    void registerInvalidName() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setName("");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
+    }
+
+    @Test
+    void registerInvalidEmail() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setEmail("invalid");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void registerDuplicateEmail() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setName(user_1.getName());
+        newUser.setEmail(user_1.getEmail());
+        newUser.setPassword(user_1.getPassword());
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isConflict())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "A user with this email already exists"));
+    }
+
+    @Test
+    void registerInvalidPassword() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setPassword("1234");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test
     void update() throws Exception {
-        perform(MockMvcRequestBuilders.put(ProfileRestController.REST_URL).contentType(MediaType.APPLICATION_JSON)
-                .with(userHttpBasic(UserTestData.user_1))
-                .content(TestJsonUtil.writeValue(UserTestData.getUpdatedDto())))
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_2))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(getUpdatedDto(), getUpdatedDto().getPassword())))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        UserTestData.USER_MATCHER.assertMatch(service.get(UserTestData.USER_1_ID), UsersUtil.updateFromDto(
-                new User(UserTestData.USER_1_ID, "User_1", "user_1@yandex.ru", "password_1", Role.USER),
-                UserTestData.getUpdatedDto()));
+        User updated = UsersUtil.updateFromDto(getNew(), getUpdatedDto());
+        updated.setId(USER_2_ID);
+        USER_MATCHER.assertMatch(service.get(USER_2_ID), updated);
+    }
+
+    @Test
+    void updateInvalidName() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setName("");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
+    }
+
+    @Test
+    void updateInvalidEmail() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setEmail("invalid");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void updateDuplicateEmail() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setEmail(user_2.getEmail());
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isConflict())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "A user with this email already exists"));
+    }
+
+    @Test
+    void updateInvalidPassword() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setPassword("1234");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(ProfileRestController.REST_URL)
-                .with(userHttpBasic(UserTestData.user_1)))
+        perform(MockMvcRequestBuilders.delete(REST_URL)
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isNoContent());
-        UserTestData.USER_MATCHER.assertMatch(service.getAll(), UserTestData.admin, UserTestData.guest, UserTestData.user_2, UserTestData.user_3);
+        USER_MATCHER.assertMatch(service.getAll(), admin, guest, user_2, user_3);
     }
 }

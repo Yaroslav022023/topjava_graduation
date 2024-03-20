@@ -29,21 +29,29 @@ public class UserTestData {
     public static final List<User> users = List.of(admin, guest, user_1, user_2, user_3);
 
     public static User getNew() {
-        return new User(null, "New_user", "new@gmail.com", "newPass", Role.USER);
+        return new User(null, "nameNew", "email_new@gmail.com", "passNew", Role.USER);
     }
 
     public static User getUpdated() {
-        User updated = new User(USER_2_ID, "User_2_updated", "user_2_updated@yandex.ru", "password_2_updated", Role.USER);
+        User updated = new User(USER_2_ID, "User_2_updated", "email_updated@yandex.ru", "passUpdated", Role.USER);
         updated.setEnabled(false);
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
     }
 
+    public static UserDto getNewDto() {
+        return new UserDto(null, "nameNew", "email_new@gmail.com", "passNew");
+    }
+
     public static UserDto getUpdatedDto() {
-        return new UserDto(null, "New_user", "new@gmail.com", "newPass");
+        return new UserDto(null, "nameUpdated", "email_updated@gmail.com", "passUpdated");
     }
 
     public static String jsonWithPassword(User user, String passw) {
         return writeAdditionProps(user, "password", passw);
+    }
+
+    public static String jsonWithPassword(UserDto userDto, String passw) {
+        return writeAdditionProps(userDto, "password", passw);
     }
 }

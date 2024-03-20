@@ -2,10 +2,14 @@ package com.topjava.graduation.util;
 
 
 import com.topjava.graduation.model.AbstractBaseEntity;
+import com.topjava.graduation.util.exception.ErrorType;
 import com.topjava.graduation.util.exception.IllegalRequestDataException;
 import com.topjava.graduation.util.exception.NotFoundException;
+import org.slf4j.Logger;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 public class ValidationUtil {
@@ -51,5 +55,15 @@ public class ValidationUtil {
     public static Throwable getRootCause(@NonNull Throwable t) {
         Throwable rootCause = NestedExceptionUtils.getRootCause(t);
         return rootCause != null ? rootCause : t;
+    }
+
+    public static void logging(Logger log, HttpServletRequest req, Exception e, boolean logStackTrace,
+                               ErrorType errorType, String[] details) {
+        Throwable rootCause = getRootCause(e);
+        if (logStackTrace) {
+            log.error(errorType + " at request " + req.getRequestURL(), rootCause);
+        } else {
+            log.warn("{} at request {}: {} {}", errorType, req.getRequestURL(), rootCause, details);
+        }
     }
 }

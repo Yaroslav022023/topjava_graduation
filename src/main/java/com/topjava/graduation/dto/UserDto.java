@@ -13,16 +13,16 @@ public class UserDto extends AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotBlank
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 255)
     private String name;
 
     @Email
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 128)
     private String email;
 
     @NotBlank
-    @Size(min = 5, max = 32, message = "length must be between 5 and 32 characters")
+    @Size(min = 5, max = 128)
     private String password;
 
     public UserDto() {

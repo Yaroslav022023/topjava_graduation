@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AdminMealRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Meal> createWithLocation(@PathVariable int restaurantId, @RequestBody Meal meal) {
+    public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal, @PathVariable int restaurantId) {
         log.info("create {} for restaurant={}", meal, restaurantId);
         checkNew(meal);
         Meal created = service.save(meal, restaurantId);
@@ -52,7 +53,7 @@ public class AdminMealRestController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable int restaurantId, @PathVariable int id, @RequestBody Meal meal) {
+    public void update(@Valid @RequestBody Meal meal, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update {} for restaurant={}", meal, restaurantId);
         assureIdConsistent(meal, id);
         service.save(meal, restaurantId);

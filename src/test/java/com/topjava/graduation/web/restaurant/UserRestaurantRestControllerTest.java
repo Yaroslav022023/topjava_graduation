@@ -1,18 +1,22 @@
 package com.topjava.graduation.web.restaurant;
 
+import com.topjava.graduation.RestaurantTestData;
 import com.topjava.graduation.dto.RestaurantVotedByUserDto;
 import com.topjava.graduation.service.RestaurantService;
 import com.topjava.graduation.web.AbstractControllerTest;
-import com.topjava.graduation.RestaurantTestData;
-import com.topjava.graduation.UserTestData;
-import com.topjava.graduation.util.RestaurantUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.topjava.graduation.RestaurantTestData.*;
 import static com.topjava.graduation.TestUtil.userHttpBasic;
+import static com.topjava.graduation.UserTestData.user_1;
+import static com.topjava.graduation.UserTestData.user_3;
+import static com.topjava.graduation.util.RestaurantUtil.convertToViewDtos;
+import static com.topjava.graduation.util.RestaurantUtil.convertToVotedByUserDto;
+import static com.topjava.graduation.util.exception.ErrorType.VOTING_RESTRICTIONS;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,11 +29,12 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     void getAllWithMealsForToday() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
-                .with(userHttpBasic(UserTestData.user_1)))
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RestaurantTestData.RESTAURANT_VIEW_DTO_MATCHER.contentJson(RestaurantUtil.convertToViewDtos(RestaurantTestData.restaurants)));
+                .andExpect(RESTAURANT_VIEW_DTO_MATCHER
+                        .contentJson(convertToViewDtos(RestaurantTestData.restaurants)));
     }
 
     @Test
@@ -41,44 +46,47 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     void getAllWithNumberVoicesForToday() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/number-voices")
-                .with(userHttpBasic(UserTestData.user_1)))
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RestaurantTestData.RESTAURANT_WITH_NUMBER_VOICES_DTO_MATCHER.contentJson(RestaurantTestData.getWithNumberVoicesDtos()));
+                .andExpect(RESTAURANT_WITH_NUMBER_VOICES_DTO_MATCHER
+                        .contentJson(getWithNumberVoicesDtos()));
     }
 
     @Test
     void getVotedByUser() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "/voted-by-user")
-                .with(userHttpBasic(UserTestData.user_1)))
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RestaurantTestData.RESTAURANT_MATCHER.contentJson(RestaurantTestData.italian));
+                .andExpect(RESTAURANT_MATCHER.contentJson(RestaurantTestData.italian));
     }
 
     @Test
     void vote() throws Exception {
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + RestaurantTestData.asian.id())
-                .with(userHttpBasic(UserTestData.user_1)))
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.id())
+                .with(userHttpBasic(user_1)))
                 .andExpect(status().isCreated());
 
-        RestaurantVotedByUserDto created = RestaurantTestData.RESTAURANT_VOTED_BY_USER_DTO_MATCHER.readFromJson(action);
-        RestaurantTestData.RESTAURANT_VOTED_BY_USER_DTO_MATCHER.assertMatch(created, RestaurantUtil.convertToVotedByUserDto(RestaurantTestData.asian));
+        RestaurantVotedByUserDto created = RESTAURANT_VOTED_BY_USER_DTO_MATCHER.readFromJson(action);
+        RESTAURANT_VOTED_BY_USER_DTO_MATCHER.assertMatch(created, convertToVotedByUserDto(asian));
 
-        RestaurantTestData.restaurantsWithNumberVoices.get(0).setVoices(1);
-        RestaurantTestData.restaurantsWithNumberVoices.get(1).setVoices(2);
-        RestaurantTestData.RESTAURANT_WITH_NUMBER_VOICES_DTO_MATCHER.assertMatch(
-                service.getAllWithNumberVoicesForToday(), RestaurantTestData.restaurantsWithNumberVoices);
-        RestaurantTestData.restaurantsWithNumberVoices.get(0).setVoices(2);
-        RestaurantTestData.restaurantsWithNumberVoices.get(1).setVoices(1);
+        restaurantsWithNumberVoices.get(0).setVoices(1);
+        restaurantsWithNumberVoices.get(1).setVoices(2);
+        RESTAURANT_WITH_NUMBER_VOICES_DTO_MATCHER.assertMatch(
+                service.getAllWithNumberVoicesForToday(), restaurantsWithNumberVoices);
+        restaurantsWithNumberVoices.get(0).setVoices(2);
+        restaurantsWithNumberVoices.get(1).setVoices(1);
     }
 
     @Test
     void voteRestrictions() throws Exception {
-        perform(MockMvcRequestBuilders.post(REST_URL + RestaurantTestData.asian.getId())
-                .with(userHttpBasic(UserTestData.user_3)))
-                .andExpect(status().isUnprocessableEntity());
+        perform(MockMvcRequestBuilders.post(REST_URL + asian.getId())
+                .with(userHttpBasic(user_3)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(errorType(VOTING_RESTRICTIONS))
+                .andExpect(detailMessages(1, "It is not possible to change the voting time after 11:00 a.m."));
     }
 }
