@@ -1,10 +1,13 @@
 package com.topjava.graduation.model;
 
+import org.hibernate.annotations.Cache;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.Set;
 
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "restaurant", uniqueConstraints =
         {@UniqueConstraint(columnNames = {"name"}, name = "restaurant_unique_name_idx")})

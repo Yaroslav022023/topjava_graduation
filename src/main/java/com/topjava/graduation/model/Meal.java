@@ -1,6 +1,8 @@
 package com.topjava.graduation.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
@@ -9,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "meal",
         indexes = {@Index(columnList = "restaurant_id, date", name = "meal_restaurant_datetime_idx")},

@@ -22,6 +22,8 @@
     </logger>
 
 <!--    <logger name="org.springframework" level="debug"/>-->
+<!--    <logger name="org.ehcache" level="DEBUG"/>-->
+<!--    <logger name="org.hibernate.cache" level="DEBUG"/>-->
     <logger name="com.topjava.graduation" level="debug"/>
     <logger name="org.springframework.security" level="debug"/>
 
