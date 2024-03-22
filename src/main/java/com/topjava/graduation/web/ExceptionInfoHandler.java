@@ -12,16 +12,16 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 import static com.topjava.graduation.util.exception.ErrorType.*;
 
-@RestControllerAdvice(annotations = RestController.class)
+@RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
@@ -74,6 +74,12 @@ public class ExceptionInfoHandler {
             }
         }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ErrorInfo wrongRequest(HttpServletRequest req, NoHandlerFoundException e) {
+        return logAndGetErrorInfo(req, e, false, WRONG_REQUEST);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
