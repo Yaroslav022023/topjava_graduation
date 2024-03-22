@@ -76,8 +76,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND)
                 .with(userHttpBasic(admin)))
-                .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
@@ -85,7 +85,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "all"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
@@ -105,7 +106,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newRestaurant)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         Restaurant created = RESTAURANT_MATCHER.readFromJson(action);
         int newId = created.id();
@@ -123,6 +125,7 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newRestaurant)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -136,8 +139,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newRestaurant)))
+                .andExpect(status().isUnprocessableEntity())
                 .andDo(print())
-                .andExpect(status().isConflict())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A restaurant with that name already exists"));
     }
@@ -148,7 +151,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(getUpdated())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         RESTAURANT_MATCHER.assertMatch(service.get(italian.id()), getUpdated());
     }
 
@@ -161,6 +165,7 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -173,8 +178,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
+                .andExpect(status().isUnprocessableEntity())
                 .andDo(print())
-                .andExpect(status().isConflict())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A restaurant with that name already exists"));
     }
@@ -183,7 +188,8 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + italian.id())
                 .with(userHttpBasic(admin)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         assertThrows(NotFoundException.class, () -> service.get(italian.id()));
     }
 
@@ -192,6 +198,7 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + MealTestData.NOT_FOUND)
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }

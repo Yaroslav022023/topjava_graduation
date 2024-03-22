@@ -31,6 +31,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL)
                 .with(userHttpBasic(user_1)))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user_1));
     }
@@ -38,7 +39,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
@@ -48,8 +50,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUserDto, newUserDto.getPassword())))
-                .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         User created = USER_MATCHER.readFromJson(action);
         int newId = created.id();
@@ -66,6 +68,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -78,6 +81,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
     }
@@ -92,7 +96,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
     }
@@ -105,6 +110,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
@@ -115,8 +121,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user_2))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(getUpdatedDto(), getUpdatedDto().getPassword())))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         User updated = UsersUtil.updateFromDto(getNew(), getUpdatedDto());
         updated.setId(USER_2_ID);
         USER_MATCHER.assertMatch(service.get(USER_2_ID), updated);
@@ -131,6 +137,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -144,6 +151,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
     }
@@ -157,7 +165,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user_1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
     }
@@ -171,6 +180,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
@@ -179,7 +189,8 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL)
                 .with(userHttpBasic(user_1)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         USER_MATCHER.assertMatch(service.getAll(), admin, guest, user_2, user_3);
     }
 }

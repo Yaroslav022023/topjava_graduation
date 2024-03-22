@@ -40,7 +40,8 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
@@ -68,7 +69,8 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
     void vote() throws Exception {
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL + asian.id())
                 .with(userHttpBasic(user_1)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         RestaurantVotedByUserDto created = RESTAURANT_VOTED_BY_USER_DTO_MATCHER.readFromJson(action);
         RESTAURANT_VOTED_BY_USER_DTO_MATCHER.assertMatch(created, convertToVotedByUserDto(asian));
@@ -86,6 +88,7 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.post(REST_URL + asian.getId())
                 .with(userHttpBasic(user_3)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VOTING_RESTRICTIONS))
                 .andExpect(detailMessages(1, "It is not possible to change the voice after 11:00 a.m."));
     }

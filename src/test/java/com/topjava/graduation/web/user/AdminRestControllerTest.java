@@ -34,6 +34,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL)
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(users));
     }
@@ -52,8 +53,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND)
                 .with(userHttpBasic(admin)))
-                .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
@@ -61,14 +62,16 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
     void getForbidden() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
                 .with(userHttpBasic(user_1)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isForbidden())
+                .andDo(print());
     }
 
     @Test
@@ -76,6 +79,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "by-email?email=" + user_1.getEmail())
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(user_1));
     }
@@ -85,6 +89,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + "by-email?email=" + "not_found@gmail.com")
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
@@ -96,7 +101,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         User created = USER_MATCHER.readFromJson(action);
         int newId = created.id();
@@ -114,6 +120,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -127,6 +134,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
     }
@@ -142,7 +150,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
     }
@@ -156,6 +165,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(newUser, newUser.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
@@ -166,7 +176,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(getUpdated(), getUpdated().getPassword())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         USER_MATCHER.assertMatch(service.get(USER_2_ID), getUpdated());
     }
 
@@ -179,6 +190,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -192,6 +204,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[email] must be a well-formed email address"));
     }
@@ -205,7 +218,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
     }
@@ -219,6 +233,7 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
@@ -227,8 +242,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + USER_1_ID)
                 .with(userHttpBasic(admin)))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         assertThrows(NotFoundException.class, () -> service.get(USER_1_ID));
     }
 
@@ -236,8 +251,8 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     void deleteNotFound() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND)
                 .with(userHttpBasic(admin)))
-                .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
@@ -248,8 +263,9 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .param("enabled", "false")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
+
         assertFalse(service.get(USER_1_ID).isEnabled());
     }
 }

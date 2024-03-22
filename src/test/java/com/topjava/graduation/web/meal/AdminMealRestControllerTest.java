@@ -56,8 +56,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     void getNotFound() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + NOT_FOUND)
                 .with(userHttpBasic(admin)))
-                .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
@@ -65,7 +65,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     @Test
     void getUnAuth() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + italian_meal1.id()))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
     }
 
     @Test
@@ -75,7 +76,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newMeal)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         Meal created = MEAL_MATCHER.readFromJson(action);
         int newId = created.id();
@@ -93,6 +95,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newMeal)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -106,6 +109,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newMeal)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[price] must be between 5 and 2000"));
     }
@@ -119,6 +123,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newMeal)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[price] must be between 5 and 2000"));
     }
@@ -134,8 +139,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(newMeal)))
+                .andExpect(status().isUnprocessableEntity())
                 .andDo(print())
-                .andExpect(status().isConflict())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "This restaurant already has food with that name and date"));
     }
@@ -146,7 +151,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(MealTestData.getUpdated())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         MEAL_MATCHER.assertMatch(service.get(italian_meal1.id(), ITALIAN_ID), getUpdated());
     }
 
@@ -159,6 +165,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
     }
@@ -172,6 +179,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[price] must be between 5 and 2000"));
     }
@@ -185,6 +193,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[price] must be between 5 and 2000"));
     }
@@ -198,7 +207,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
                 .andDo(print())
-                .andExpect(status().isConflict())
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "This restaurant already has food with that name and date"));
     }
@@ -207,7 +217,8 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + italian_meal1.id())
                 .with(userHttpBasic(admin)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(print());
         assertThrows(NotFoundException.class, () -> service.get(italian_meal1.id(), ITALIAN_ID));
     }
 
@@ -216,6 +227,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.delete(REST_URL + NOT_FOUND)
                 .with(userHttpBasic(admin)))
                 .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
                 .andExpect(errorType(DATA_NOT_FOUND))
                 .andExpect(detailMessages(0));
     }
