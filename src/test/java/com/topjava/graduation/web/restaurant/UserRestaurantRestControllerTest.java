@@ -87,6 +87,6 @@ public class UserRestaurantRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user_3)))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(errorType(VOTING_RESTRICTIONS))
-                .andExpect(detailMessages(1, "It is not possible to change the voting time after 11:00 a.m."));
+                .andExpect(detailMessages(1, "It is not possible to change the voice after 11:00 a.m."));
     }
 }

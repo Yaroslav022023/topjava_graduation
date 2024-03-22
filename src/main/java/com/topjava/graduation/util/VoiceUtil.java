@@ -13,6 +13,6 @@ public class VoiceUtil {
         if (voice.getTime().isBefore(LocalTime.of(11, 0))) {
             return true;
         }
-        throw new VotingRestrictionsException("It is not possible to change the voting time after 11:00 a.m.");
+        throw new VotingRestrictionsException("It is not possible to change the voice after 11:00 a.m.");
     }
 }
