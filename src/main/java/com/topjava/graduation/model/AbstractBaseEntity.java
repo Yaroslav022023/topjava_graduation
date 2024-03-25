@@ -1,5 +1,6 @@
 package com.topjava.graduation.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.util.Assert;
@@ -14,6 +15,7 @@ public class AbstractBaseEntity implements Persistable<Integer> {
     @Id
     @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @ApiModelProperty(hidden = true)
     protected Integer id;
 
     protected AbstractBaseEntity() {

@@ -1,5 +1,6 @@
 package com.topjava.graduation.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Cache;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -14,6 +15,7 @@ import java.util.Set;
 public class Restaurant extends AbstractNamedEntity {
     @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ApiModelProperty(hidden = true)
     private Set<Meal> meals;
 
     public Restaurant() {

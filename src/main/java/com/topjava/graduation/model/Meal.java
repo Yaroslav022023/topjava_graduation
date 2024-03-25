@@ -2,6 +2,7 @@ package com.topjava.graduation.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.topjava.graduation.View;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.OnDelete;
@@ -33,6 +34,7 @@ public class Meal extends AbstractNamedEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     @NotNull(groups = View.Persist.class)
+    @ApiModelProperty(hidden = true)
     private Restaurant restaurant;
 
     public Meal() {
