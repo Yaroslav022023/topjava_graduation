@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static com.topjava.graduation.util.ValidationUtil.checkNotFoundWithId;
+import static com.topjava.graduation.util.validation.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class RestaurantService {

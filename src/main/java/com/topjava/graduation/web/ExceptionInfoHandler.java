@@ -1,6 +1,6 @@
 package com.topjava.graduation.web;
 
-import com.topjava.graduation.util.ValidationUtil;
+import com.topjava.graduation.util.validation.ValidationUtil;
 import com.topjava.graduation.util.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

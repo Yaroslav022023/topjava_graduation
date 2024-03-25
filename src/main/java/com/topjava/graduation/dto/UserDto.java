@@ -1,6 +1,7 @@
 package com.topjava.graduation.dto;
 
 import com.topjava.graduation.model.AbstractBaseEntity;
+import com.topjava.graduation.util.validation.NoHtml;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -14,11 +15,13 @@ public class UserDto extends AbstractBaseEntity implements Serializable {
 
     @NotBlank
     @Size(min = 2, max = 255)
+    @NoHtml
     private String name;
 
     @Email
     @NotBlank
     @Size(max = 128)
+    @NoHtml
     private String email;
 
     @NotBlank

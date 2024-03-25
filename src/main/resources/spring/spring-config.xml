@@ -50,6 +50,10 @@
                        value="org.ehcache.jsr107.EhcacheCachingProvider"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SECOND_LEVEL_CACHE}" value="true"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/>
+                <entry key="javax.persistence.validation.group.pre-persist"
+                       value="com.topjava.graduation.View$Persist"/>
+                <entry key="javax.persistence.validation.group.pre-update"
+                       value="com.topjava.graduation.View$Persist"/>
             </map>
         </property>
         <property name="jpaVendorAdapter">

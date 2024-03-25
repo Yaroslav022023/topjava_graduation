@@ -87,6 +87,46 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void registerInvalidPassword() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setPassword("1234");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
+    }
+
+    @Test
+    void registerHtmlUnsafeName() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
+    void registerHtmlUnsafeEmail() throws Exception {
+        UserDto newUser = getNewDto();
+        newUser.setEmail("<script>alert(123)</script>@gmail.com");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[email] Unsafe html content",
+                        "[email] must be a well-formed email address"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void registerDuplicateEmail() throws Exception {
         UserDto newUser = getNewDto();
@@ -100,19 +140,6 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
-    }
-
-    @Test
-    void registerInvalidPassword() throws Exception {
-        UserDto newUser = getNewDto();
-        newUser.setPassword("1234");
-        perform(MockMvcRequestBuilders.post(REST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonWithPassword(newUser, newUser.getPassword())))
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test
@@ -157,6 +184,49 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateInvalidPassword() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setPassword("1234");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
+    }
+
+    @Test
+    void updateHtmlUnsafeName() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
+    void updateHtmlUnsafeEmail() throws Exception {
+        UserDto updated = getUpdatedDto();
+        updated.setEmail("<script>alert(123)</script>@gmail.com");
+        perform(MockMvcRequestBuilders.put(REST_URL)
+                .with(userHttpBasic(user_1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[email] Unsafe html content",
+                        "[email] must be a well-formed email address"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void updateDuplicateEmail() throws Exception {
         UserDto updated = getUpdatedDto();
@@ -169,20 +239,6 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
-    }
-
-    @Test
-    void updateInvalidPassword() throws Exception {
-        UserDto updated = getUpdatedDto();
-        updated.setPassword("1234");
-        perform(MockMvcRequestBuilders.put(REST_URL)
-                .with(userHttpBasic(user_1))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonWithPassword(updated, updated.getPassword())))
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test

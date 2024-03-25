@@ -5,7 +5,7 @@ import com.topjava.graduation.model.User;
 import com.topjava.graduation.repository.CrudUserRepository;
 import com.topjava.graduation.util.UsersUtil;
 import com.topjava.graduation.web.security.AuthorizedUser;
-import com.topjava.graduation.util.ValidationUtil;
+import com.topjava.graduation.util.validation.ValidationUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
@@ -18,8 +18,8 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
-import static com.topjava.graduation.util.ValidationUtil.checkNotFound;
-import static com.topjava.graduation.util.ValidationUtil.checkNotFoundWithId;
+import static com.topjava.graduation.util.validation.ValidationUtil.checkNotFound;
+import static com.topjava.graduation.util.validation.ValidationUtil.checkNotFoundWithId;
 
 @Service()
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)

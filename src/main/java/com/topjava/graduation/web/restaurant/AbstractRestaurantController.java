@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.topjava.graduation.util.ValidationUtil.assureIdConsistent;
-import static com.topjava.graduation.util.ValidationUtil.checkNew;
+import static com.topjava.graduation.util.validation.ValidationUtil.assureIdConsistent;
+import static com.topjava.graduation.util.validation.ValidationUtil.checkNew;
 
 public class AbstractRestaurantController {
     protected final Logger log = LoggerFactory.getLogger(getClass());

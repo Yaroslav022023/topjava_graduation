@@ -1,6 +1,7 @@
 package com.topjava.graduation.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.topjava.graduation.View;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,12 +25,12 @@ public class Voice extends AbstractBaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @NotNull
+    @NotNull(groups = View.Persist.class)
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotNull
+    @NotNull(groups = View.Persist.class)
     private User user;
 
     public Voice() {

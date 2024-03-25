@@ -1,5 +1,6 @@
 package com.topjava.graduation.web.meal;
 
+import com.topjava.graduation.View;
 import com.topjava.graduation.model.Meal;
 import com.topjava.graduation.service.MealService;
 import org.slf4j.Logger;
@@ -7,15 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static com.topjava.graduation.util.ValidationUtil.assureIdConsistent;
-import static com.topjava.graduation.util.ValidationUtil.checkNew;
+import static com.topjava.graduation.util.validation.ValidationUtil.assureIdConsistent;
+import static com.topjava.graduation.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = AdminMealRestController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +42,8 @@ public class AdminMealRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal, @PathVariable int restaurantId) {
+    public ResponseEntity<Meal> createWithLocation(@Validated(View.Web.class) @RequestBody Meal meal,
+                                                   @PathVariable int restaurantId) {
         log.info("create {} for restaurant={}", meal, restaurantId);
         checkNew(meal);
         Meal created = service.save(meal, restaurantId);
@@ -53,7 +55,8 @@ public class AdminMealRestController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Meal meal, @PathVariable int id, @PathVariable int restaurantId) {
+    public void update(@Validated(View.Web.class) @RequestBody Meal meal, @PathVariable int id,
+                       @PathVariable int restaurantId) {
         log.info("update {} for restaurant={}", meal, restaurantId);
         assureIdConsistent(meal, id);
         service.save(meal, restaurantId);

@@ -36,7 +36,8 @@ public class UserRestaurantRestController extends AbstractRestaurantController {
     }
 
     @PostMapping(value = "{restaurantId}")
-    public ResponseEntity<RestaurantVotedByUserDto> vote(@PathVariable int restaurantId, @AuthenticationPrincipal AuthorizedUser authUser) {
+    public ResponseEntity<RestaurantVotedByUserDto> vote(@PathVariable int restaurantId,
+                                                         @AuthenticationPrincipal AuthorizedUser authUser) {
         super.vote(authUser.getId(), restaurantId);
         URI uriOfVotedByUser = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/voted-by-user")

@@ -1,5 +1,8 @@
 package com.topjava.graduation.model;
 
+import com.topjava.graduation.View;
+import com.topjava.graduation.util.validation.NoHtml;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
@@ -10,6 +13,7 @@ public class AbstractNamedEntity extends AbstractBaseEntity{
     @Column(name = "name", nullable = false)
     @NotBlank
     @Size(min = 2, max = 255)
+    @NoHtml(groups = {View.Web.class})
     protected String name;
 
     public AbstractNamedEntity() {

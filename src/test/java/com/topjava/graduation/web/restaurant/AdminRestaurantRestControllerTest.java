@@ -131,6 +131,20 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void createHtmlUnsafe() throws Exception {
+        Restaurant newRestaurant = getNew();
+        newRestaurant.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writeValue(newRestaurant)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void createDuplicateDateAndName() throws Exception {
         Restaurant newRestaurant = getNew();
@@ -168,6 +182,20 @@ public class AdminRestaurantRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(2, "[name] must not be blank", "[name] size must be between 2 and 255"));
+    }
+
+    @Test
+    void updateHtmlUnsafe() throws Exception {
+        Restaurant updated = getUpdated();
+        updated.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.put(REST_URL + italian.id())
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writeValue(updated)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
     }
 
     @Test

@@ -1,6 +1,8 @@
 package com.topjava.graduation.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.topjava.graduation.View;
+import com.topjava.graduation.util.validation.NoHtml;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -25,6 +27,7 @@ public class User extends AbstractNamedEntity {
     @Email
     @NotBlank
     @Size(max = 128)
+    @NoHtml(groups = {View.Web.class})
     private String email;
 
     @Column(name = "password", nullable = false)

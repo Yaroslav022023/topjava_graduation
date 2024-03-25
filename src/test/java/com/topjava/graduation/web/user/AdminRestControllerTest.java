@@ -140,6 +140,49 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void createInvalidPassword() throws Exception {
+        User newUser = getNew();
+        newUser.setPassword("1234");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
+    }
+
+    @Test
+    void createHtmlUnsafeName() throws Exception {
+        User newUser = getNew();
+        newUser.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
+    void createHtmlUnsafeEmail() throws Exception {
+        User newUser = getNew();
+        newUser.setEmail("<script>alert(123)</script>@gmail.com");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(newUser, newUser.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[email] Unsafe html content",
+                        "[email] must be a well-formed email address"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void createDuplicateEmail() throws Exception {
         User newUser = getNew();
@@ -154,20 +197,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
-    }
-
-    @Test
-    void createInvalidPassword() throws Exception {
-        User newUser = getNew();
-        newUser.setPassword("1234");
-        perform(MockMvcRequestBuilders.post(REST_URL)
-                .with(userHttpBasic(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonWithPassword(newUser, newUser.getPassword())))
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test
@@ -210,6 +239,49 @@ public class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateInvalidPassword() throws Exception {
+        User updated = getUpdated();
+        updated.setPassword("1234");
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_2_ID)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
+    }
+
+    @Test
+    void updateHtmlUnsafeName() throws Exception {
+        User updated = getUpdated();
+        updated.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_2_ID)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
+    void updateHtmlUnsafeEmail() throws Exception {
+        User updated = getUpdated();
+        updated.setEmail("<script>alert(123)</script>@gmail.com");
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_2_ID)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonWithPassword(updated, updated.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(2, "[email] Unsafe html content",
+                        "[email] must be a well-formed email address"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void updateDuplicateEmail() throws Exception {
         User updated = getUpdated();
@@ -222,20 +294,6 @@ public class AdminRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "A user with this email already exists"));
-    }
-
-    @Test
-    void updateInvalidPassword() throws Exception {
-        User updated = getUpdated();
-        updated.setPassword("1234");
-        perform(MockMvcRequestBuilders.put(REST_URL + USER_2_ID)
-                .with(userHttpBasic(admin))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonWithPassword(updated, updated.getPassword())))
-                .andExpect(status().isUnprocessableEntity())
-                .andDo(print())
-                .andExpect(errorType(VALIDATION_ERROR))
-                .andExpect(detailMessages(1, "[password] size must be between 5 and 128"));
     }
 
     @Test

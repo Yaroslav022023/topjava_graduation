@@ -3,7 +3,7 @@ package com.topjava.graduation.web.user;
 import com.topjava.graduation.dto.UserDto;
 import com.topjava.graduation.model.User;
 import com.topjava.graduation.service.UserService;
-import com.topjava.graduation.util.ValidationUtil;
+import com.topjava.graduation.util.validation.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

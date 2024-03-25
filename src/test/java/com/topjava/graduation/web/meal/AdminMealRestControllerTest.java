@@ -71,7 +71,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocation() throws Exception {
-        Meal newMeal = MealTestData.getNew();
+        Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +88,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createInvalidName() throws Exception {
-        Meal newMeal = MealTestData.getNew();
+        Meal newMeal = getNew();
         newMeal.setName("");
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
@@ -102,7 +102,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createInvalidPriceLessThanMin() throws Exception {
-        Meal newMeal = MealTestData.getNew();
+        Meal newMeal = getNew();
         newMeal.setPrice(4);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
@@ -116,7 +116,7 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createInvalidPriceMoreThanMax() throws Exception {
-        Meal newMeal = MealTestData.getNew();
+        Meal newMeal = getNew();
         newMeal.setPrice(2001);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .with(userHttpBasic(admin))
@@ -126,6 +126,20 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))
                 .andExpect(detailMessages(1, "[price] must be between 5 and 2000"));
+    }
+
+    @Test
+    void createHtmlUnsafe() throws Exception {
+        Meal newMeal = getNew();
+        newMeal.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writeValue(newMeal)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
     }
 
     @Test
@@ -199,6 +213,20 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateHtmlUnsafe() throws Exception {
+        Meal updated = getUpdated();
+        updated.setName("<script>alert(123)</script>");
+        perform(MockMvcRequestBuilders.put(REST_URL + italian_meal1.id())
+                .with(userHttpBasic(admin))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(writeValue(updated)))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print())
+                .andExpect(errorType(VALIDATION_ERROR))
+                .andExpect(detailMessages(1, "[name] Unsafe html content"));
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void updateDuplicateDateAndName() throws Exception {
         Meal updated = new Meal(null, italian_meal1.getDate(), italian_meal1.getName(), 100);
@@ -206,7 +234,6 @@ public class AdminMealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(writeValue(updated)))
-                .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andDo(print())
                 .andExpect(errorType(VALIDATION_ERROR))

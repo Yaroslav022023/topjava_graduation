@@ -1,4 +1,4 @@
-package com.topjava.graduation.util;
+package com.topjava.graduation.util.validation;
 
 
 import com.topjava.graduation.model.AbstractBaseEntity;
